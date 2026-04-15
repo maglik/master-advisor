@@ -8,33 +8,25 @@ group = 'com.example'
 version = '0.0.1-SNAPSHOT'
 
 java {
-    sourceCompatibility = '17'   // ← меняем с 11 на 17
-    targetCompatibility = '17'
+    sourceCompatibility = '17'
 }
 
 repositories {
     mavenCentral()
 }
 
-ext {
-    set('droolsVersion', '8.44.0.Final')
-}
-
 dependencies {
     implementation 'org.springframework.boot:spring-boot-starter-web'
     implementation 'org.springframework.boot:spring-boot-starter-data-jpa'
-    implementation 'org.springframework.boot:spring-boot-starter-webflux'
 
-    // Drools для динамической компиляции
-    implementation "org.drools:drools-core:${droolsVersion}"
-    implementation "org.drools:drools-compiler:${droolsVersion}"
-    implementation "org.drools:drools-mvel:${droolsVersion}"
-    implementation "org.kie:kie-api:${droolsVersion}"
-    implementation "org.drools:drools-model-compiler:${droolsVersion}"
+    // Drools with XML support
+    implementation 'org.drools:drools-core:8.44.0.Final'
+    implementation 'org.drools:drools-compiler:8.44.0.Final'
+    implementation 'org.drools:drools-mvel:8.44.0.Final'
+    implementation 'org.drools:drools-xml-support:8.44.0.Final'   // ← ДОБАВИТЬ ЭТУ СТРОКУ
 
     runtimeOnly 'org.postgresql:postgresql'
-    implementation 'com.jcraft:jsch:0.1.55'
-    implementation 'org.springframework.boot:spring-boot-starter'
+
     compileOnly 'org.projectlombok:lombok'
     annotationProcessor 'org.projectlombok:lombok'
 

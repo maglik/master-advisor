@@ -1,4 +1,4 @@
-package com.example.masteradvisor.config;
+/*package com.example.masteradvisor.config;
 
 import org.springframework.beans.factory.annotation.Value;
 import org.springframework.context.annotation.Bean;
@@ -33,4 +33,4 @@ public class KieServerConfig {
                 .defaultHeader(HttpHeaders.AUTHORIZATION, "Basic " + encodedAuth)
                 .build();
     }
-}
+}*/

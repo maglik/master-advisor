@@ -1,18 +1,14 @@
 package com.example.masteradvisor.dto;
 
+import lombok.AllArgsConstructor;
 import lombok.Data;
+import lombok.NoArgsConstructor;
 
 @Data
+@NoArgsConstructor
+@AllArgsConstructor
 public class RecommendationDto {
     private String programName;
-    private String fundingType;  // "budget" или "paid"
+    private String fundingType;
     private Double confidence;
-
-    public RecommendationDto() {}
-
-    public RecommendationDto(String programName, String fundingType, Double confidence) {
-        this.programName = programName;
-        this.fundingType = fundingType;
-        this.confidence = confidence;
-    }
 }

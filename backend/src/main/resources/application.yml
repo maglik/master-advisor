@@ -12,16 +12,9 @@ spring:
       hibernate:
         dialect: org.hibernate.dialect.PostgreSQLDialect
 
-kie:
-  server:
-    url: http://localhost:8180/kie-server/services/rest/server
-    username: admin
-    password: admin
-    container-id: master-rules-container
-
 server:
   port: 8080
 
-ssh:
-  tunnel:
-    enabled: false
+logging:
+  level:
+    com.example.masteradvisor: DEBUG
