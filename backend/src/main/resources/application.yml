@@ -1,0 +1,27 @@
+spring:
+  datasource:
+    url: jdbc:postgresql://localhost:5432/master_advisor
+    username: postgres
+    password: postgres123
+    driver-class-name: org.postgresql.Driver
+  jpa:
+    hibernate:
+      ddl-auto: validate
+    show-sql: true
+    properties:
+      hibernate:
+        dialect: org.hibernate.dialect.PostgreSQLDialect
+
+kie:
+  server:
+    url: http://localhost:8180/kie-server/services/rest/server
+    username: admin
+    password: admin
+    container-id: master-rules-container
+
+server:
+  port: 8080
+
+ssh:
+  tunnel:
+    enabled: false

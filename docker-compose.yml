@@ -1,0 +1,81 @@
+version: '3.8'
+
+services:
+  # PostgreSQL для хранения правил, программ, вопросов
+  postgres:
+    image: postgres:15-alpine
+    container_name: master-advisor-postgres
+    environment:
+      POSTGRES_DB: master_advisor
+      POSTGRES_USER: admin
+      POSTGRES_PASSWORD: ${DB_PASSWORD:-secret}
+    ports:
+      - "5432:5432"
+    volumes:
+      - postgres_data:/var/lib/postgresql/data
+      - ./database/init.sql:/docker-entrypoint-initdb.d/init.sql
+    networks:
+      - master-network
+    healthcheck:
+      test: ["CMD-SHELL", "pg_isready -U admin -d master_advisor"]
+      interval: 10s
+      timeout: 5s
+      retries: 5
+
+  # KIE Server (unmanaged) — движок правил
+  kie-server:
+    image: quay.io/kiegroup/kie-server:7.67.0.Final
+    container_name: master-advisor-kie-server
+    environment:
+      KIE_SERVER_ID: kie-server-unmanaged
+      KIE_SERVER_LOCATION: http://kie-server:8080/kie-server/services/rest/server
+      KIE_SERVER_USER: ${KIE_USER:-kieuser}
+      KIE_SERVER_PWD: ${KIE_PASSWORD:-kiepass123}
+      KIE_SERVER_MANAGED: false
+      KIE_MAVEN_REPO: ""
+      JAVA_OPTS: "-Xmx512m"
+    ports:
+      - "8180:8080"
+    networks:
+      - master-network
+    healthcheck:
+      test: ["CMD", "curl", "-f", "-u", "${KIE_USER:-kieuser}:${KIE_PASSWORD:-kiepass123}", "http://localhost:8080/kie-server/services/rest/server"]
+      interval: 30s
+      timeout: 10s
+      retries: 5
+
+  # Spring Boot приложение
+  backend:
+    build: ./backend
+    container_name: master-advisor-backend
+    environment:
+      # Подключение к БД
+      SPRING_DATASOURCE_URL: jdbc:postgresql://postgres:5432/master_advisor
+      SPRING_DATASOURCE_USERNAME: admin
+      SPRING_DATASOURCE_PASSWORD: ${DB_PASSWORD:-secret}
+      # Настройки KIE Server
+      KIE_SERVER_URL: http://kie-server:8080/kie-server/services/rest/server
+      KIE_SERVER_USERNAME: ${KIE_USER:-kieuser}
+      KIE_SERVER_PASSWORD: ${KIE_PASSWORD:-kiepass123}
+      KIE_SERVER_CONTAINER_ID: master-rules-container
+      # Порт приложения
+      SERVER_PORT: 8080
+    ports:
+      - "8080:8080"
+    networks:
+      - master-network
+    depends_on:
+      postgres:
+        condition: service_healthy
+      kie-server:
+        condition: service_healthy
+    volumes:
+      # Для разработки: монтируем код (опционально)
+      - ./backend:/app
+
+volumes:
+  postgres_data:
+
+networks:
+  master-network:
+    driver: bridge
